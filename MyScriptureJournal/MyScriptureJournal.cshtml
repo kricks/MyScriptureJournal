@@ -14,8 +14,8 @@
 
     if (!Request.QueryString["searchBook"].IsEmpty())
     {
-        selectCommand = "SELECT * FROM MyScriptureJournal WHERE Chapter LIKE @0";
-        searchTerm = "%" + Request.QueryString["searchChapter"] + "%";
+        selectCommand = "SELECT * FROM MyScriptureJournal WHERE Note LIKE @0";
+        searchTerm = "%" + Request.QueryString["searchNote"] + "%";
     }
 
     var selectedData = db.Query(selectCommand, searchTerm);
@@ -30,12 +30,13 @@
         <input type="Submit" value="Search Scripture" /><br />
         (Leave blank to list all scripture.)<br />
     </div>
-
+    <br />
     <div>
         <label for="SearchChapter">Scripture contains the following:</label>
         <input type="text" name="searchChapter" value="@Request.QueryString["searchChapter"]" />
         <input type="Submit" value="Search Chapter" /><br />
     </div>
+    <br />
 </form>
 
 <div>
