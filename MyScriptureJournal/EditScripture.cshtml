@@ -1,0 +1,110 @@
+﻿@{
+    Layout = "~/_Layout.cshtml";
+    Page.Title = "Edit a Scripture";
+
+    var book = "";
+    var chapter = "";
+    var verse = "";
+    var note = "";
+    var date = "";
+    var MyScriptureJournalId = "";
+
+    if (!IsPost)
+    {
+        if (!Request.QueryString["ID"].IsEmpty() && Request.QueryString["ID"].IsInt())
+        {
+            MyScriptureJournalId = Request.QueryString["ID"];
+            var db = Database.Open("MyScriptureJournal");
+            var dbCommand = "SELECT * FROM MyScriptureJournal WHERE ID = @0";
+            var row = db.QuerySingle(dbCommand, MyScriptureJournalId);
+
+            if (row != null)
+            {
+                book = row.Book;
+                chapter = row.Chapter;
+                verse = row.Verse;
+                note = row.Note;
+                date = row.Date;
+            }
+            else
+            {
+                Validation.AddFormError("No scriptures were selected.");
+                // If you are using a version of ASP.NET Web Pages 2 that's
+                // earlier than the RC release, comment out the preceding
+                // statement and uncomment the following one.
+                //ModelState.AddFormError("No movie was selected.");
+            }
+        }
+        else
+        {
+            Validation.AddFormError("No scriptures were selected.");
+            // If you are using a version of ASP.NET Web Pages 2 that's
+            // earlier than the RC release, comment out the preceding
+            // statement and uncomment the following one.
+            //ModelState.AddFormError("No movie was selected.");
+        }
+    }
+
+    if (IsPost)
+    {
+        Validation.RequireField("book", "You must enter a book");
+        Validation.RequireField("chapter", "Chapter is required");
+        Validation.RequireField("verse", "You must enter a verse");
+        Validation.RequireField("note", "Note is required");
+        Validation.RequireField("date", "You must enter a date");
+        Validation.RequireField("MyScriptureJournalId", "No scripture ID was submitted!");
+
+        book = Request.Form["book"];
+        chapter = Request.Form["chapter"];
+        verse = Request.Form["verse"];
+        note = Request.Form["note"];
+        date = Request.Form["date"];
+        MyScriptureJournalId = Request.Form["MyScriptureJournalId"];
+
+        if (Validation.IsValid())
+        {
+            var db = Database.Open("MyScriptureJournal");
+            var updateCommand = "UPDATE MyScriptureJournal SET Book=@0, Chapter=@1, Verse=@2, Note=@3, Date=@4 WHERE Id=@5";
+            db.Execute(updateCommand, book, chapter, verse, note, date, MyScriptureJournalId);
+            Response.Redirect("~/MyScriptureJournal");
+        }
+    }
+}
+
+<h2>Edit a Scripture</h2>
+@Html.ValidationSummary()
+<form method="post">
+    <fieldset>
+        <legend>Scripture Information</legend>
+
+        <p>
+            <label for="book">Book:</label>
+            <input type="text" name="book" value="@book" />
+        </p>
+
+        <p>
+            <label for="chapter">Chapter:</label>
+            <input type="text" name="chapter" value="@chapter" />
+        </p>
+
+        <p>
+            <label for="verse">Verse:</label>
+            <input type="text" name="verse" value="@verse" />
+        </p>
+
+        <p>
+            <label for="note">Note:</label>
+            <input type="text" name="note" value="@note" />
+        </p>
+
+        <p>
+            <label for="date">Date:</label>
+            <input type="text" name="date" value="@date" />
+        </p>
+
+        <input type="hidden" name="MyScriptureJournalId" value="@MyScriptureJournalId" />
+
+        <p><input type="submit" name="buttonSubmit" value="Submit Changes" /></p>
+    </fieldset>
+</form>
+<p><a href="~/MyScriptureJournal">Return to  scripture journal</a></p>
